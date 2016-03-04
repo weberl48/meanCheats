@@ -93,7 +93,7 @@ var readStream = fs.createReadStream(__dirname + '/index.html');
   readStream.pipe(res);
 }).listen(3000);
 // tell ourselves what's happening
-console.log('Visit me at http://localhost:3000')
+console.log('Visit me at http://localhost:3000');
 
 ```
 
@@ -171,6 +171,8 @@ console.log('server running on port 3000');
 
 To server multiple pages to users additional routes will be required. The express router can be used to achieve this. The express router provides routing APIs like .use(), .get(), .param(), and .route().
 
+Using the Router(),
+
 ### express.Router()
 Call an instance of express.Router() and define routes on that. For Example in applications an adminRouter is usually created to handle admin specific routes. This is useful because we can create multiple instances of the express router allowing for our basic routes, authenticated routes, and API routes.
 
@@ -210,7 +212,7 @@ app.use('/admin', adminRouter);
 </tbody>
 </table>
 ***
-## Basic routes (Express)
+## Basic routes - Express
 ```
 Structure
 ├── nodeApp/
@@ -268,7 +270,7 @@ console.log("server runninr on port 3000");
 var adminRouter = express.Router();
  adminRouter.get('/', function(req,res){
   res.send('Dashboard');
-})
+});
 
 // users page /admin/users
 adminRouter.get('/users', function(req, res){
@@ -278,3 +280,81 @@ adminRouter.get('/users', function(req, res){
 app.use('/admin', adminRouter);
 
 ```
+***
+## Route Middleware - router.use()
+
+Middleware is a way to do something before a request is processed. For example checking if a user is authenticated and logging date for analytics. Make sure you place middleware after your router declaration and before and defined routes. The next() argument is used to tell Express that the middleware function is complete. The order you place your middleware and routes is very important.
+
+```js
+adminrouter.use(function(req,res,next){
+  // logging each request made to console
+  console.log(req.method , req.url);
+// continue to the route
+  next();
+});
+```
+***
+## Route Parameters - /user/:id
+
+Express can handle route parameters. Route parameters can be used to validate data coming into your application. This could be used to validate a token for a REST API.
+```
+//user ID is passed into the url   /admin/users/:name  
+```
+```js
+
+adminRouter.get('/users/:name', function(req,res){
+  res.send('hello'+ req.params.name + '!');
+});
+  ```
+***
+## Middleware for Parameters - .param()
+
+Creates middleware that will run for a certain route parameter.
+```js
+adminRouter.param('name' , function(req, res, next, name){
+  //do validations http-server
+
+  //once validations done save item in the req
+
+  req.name = name;
+  // do the thing
+  next();
+
+  });
+
+  //route middleware is acting upon localhost:3000/admin/hello/:name
+  //When the /hello/:name route is hit the .param() middleware will be used.
+
+  adminRouter.get('/hello/:name', function(req ,re) {
+    res.send('hello' + req.name + '!');
+  });
+```
+***
+## Login Routes - app.route()
+
+routes can be defined on the app variable, like calling express.Router(). This allows you to define multiple actions on a single login route. Routes are applied directly to the main app object.
+
+
+```js
+admin.route('/login')
+      // show form localhost:3000/login
+    .get(function(req,res){
+      res.send('login form');
+    });
+    // process the form
+    .post(function(req,res){
+      res.send('processing login form')
+    })
+```
+***
+## Bullets
+- use express.Router() multiple times to define groups of routes
+- apply the express.Router() to a section of the site using app.use()
+- use route middleware to process requests
+- use route middleware to validate parameters using .param()
+- use app.route() to define multiple requests on a route
+
+<hr style="border-style:solid; border-width:3px;
+  " />
+
+# MongoDB
