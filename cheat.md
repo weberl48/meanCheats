@@ -30,7 +30,7 @@
 		- [CRUD](#crud)
 	- [Mongo and Node](#mongo-and-node)
 		- [Connection to a DB using mongoose](#connection-to-a-db-using-mongoose)
-	- [RESTful Node API (Application Programming Interface)](#restful-node-api-application-programming-interface)
+- [RESTful Node API (Application Programming Interface)](#restful-node-api-application-programming-interface)
 		- [package.json](#packagejson)
 		- [server.js](#serverjs)
 		- [user.js](#userjs)
@@ -467,7 +467,7 @@ var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/db_name')
 ```
 
-## RESTful Node API (Application Programming Interface)
+# RESTful Node API (Application Programming Interface)
 Express will be the node framework used, morgan allows loggin requests to the console, mongoose is an ODM for communication with Mongo, body-parser is used to pull POST content from an HTTP request, and bcrypt is used to has passwords to be stored in a mongo document.
 
 ```
