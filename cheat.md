@@ -35,7 +35,9 @@ Packages can be installed by manually writing them in the package.json file, or 
 - npm install package another-package --save //Install multiple packages
 - npm install       // Install all dependancies listed in package.json file.
 ```
-***
+
+--------------------------------------------------------------------------------
+
 ## Basic Node HTTP server
 
 ```
@@ -45,6 +47,7 @@ Structure
 │   ├── server.js
 │   ├── package.json
 ```
+
 ### package.json
 
 ```
@@ -75,6 +78,7 @@ Structure
 </body>
 </html>
 ```
+
 ### server.js
 
 ```js
@@ -94,15 +98,14 @@ var readStream = fs.createReadStream(__dirname + '/index.html');
 }).listen(3000);
 // tell ourselves what's happening
 console.log('Visit me at http://localhost:3000');
-
 ```
 
 In server.js the http module is used to create a server and the fs module is used to grab index.html and send it as a response to the user. The server is set to listen on port 3000. View index.html at localhost:3000.
-***
+
+--------------------------------------------------------------------------------
+
 ## Express Server
-
 Express is a framework for node use to create MVC web apps and REST APIs. Install express using npm install express --save
-
 
 ```
 Structure
@@ -111,6 +114,7 @@ Structure
 │   ├── server.js
 │   ├── package.json
 ```
+
 ### package.json
 
 ```
@@ -126,7 +130,9 @@ Structure
   }
 }
 ```
+
 ### index.html
+
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -148,6 +154,7 @@ Structure
 ```
 
 ### server.js
+
 ```js
 
 // load the express package and create our app
@@ -166,9 +173,9 @@ app.listen(3000);
 console.log('server running on port 3000');
 ```
 
-***
-## Node Routing with Express
+--------------------------------------------------------------------------------
 
+## Node Routing with Express
 To server multiple pages to users additional routes will be required. The express router can be used to achieve this. The express router provides routing APIs like .use(), .get(), .param(), and .route().
 
 Using the Router(),
@@ -212,8 +219,10 @@ app.use('/admin', adminRouter);
 </tbody>
 </table>
 
-***
+--------------------------------------------------------------------------------
+
 ## Basic routes - Express
+
 ```
 Structure
 ├── nodeApp/
@@ -221,7 +230,9 @@ Structure
 │   ├── server.js
 │   ├── package.json
 ```
+
 ### package.json
+
 ```
 {
   "name": "expressserver",
@@ -235,7 +246,9 @@ Structure
   }
 }
 ```
+
 ### index.html
+
 ```html
 <!DOCTYPE html>
 <html>
@@ -247,9 +260,10 @@ Structure
 
   </body>
 </html>
-
 ```
+
 ### server.js
+
 ```js
 //load the express package and create our app
 var express = require('express');
@@ -279,11 +293,11 @@ adminRouter.get('/users', function(req, res){
 })
 // apply routes to application
 app.use('/admin', adminRouter);
-
 ```
-***
-## Route Middleware - router.use()
 
+--------------------------------------------------------------------------------
+
+## Route Middleware - router.use()
 Middleware is a way to do something before a request is processed. For example checking if a user is authenticated and logging date for analytics. Make sure you place middleware after your router declaration and before and defined routes. The next() argument is used to tell Express that the middleware function is complete. The order you place your middleware and routes is very important.
 
 ```js
@@ -294,23 +308,28 @@ adminrouter.use(function(req,res,next){
   next();
 });
 ```
-***
-## Route Parameters - /user/:id
 
+--------------------------------------------------------------------------------
+
+## Route Parameters - /user/:id
 Express can handle route parameters. Route parameters can be used to validate data coming into your application. This could be used to validate a token for a REST API.
+
 ```
-//user ID is passed into the url   /admin/users/:name  
+//user ID is passed into the url   /admin/users/:name
 ```
+
 ```js
 
 adminRouter.get('/users/:name', function(req,res){
   res.send('hello'+ req.params.name + '!');
 });
-  ```
-***
-## Middleware for Parameters - .param()
+```
 
+--------------------------------------------------------------------------------
+
+## Middleware for Parameters - .param()
 Creates middleware that will run for a certain route parameter.
+
 ```js
 adminRouter.param('name' , function(req, res, next, name){
   //do validations http-server
@@ -330,11 +349,11 @@ adminRouter.param('name' , function(req, res, next, name){
     res.send('hello' + req.name + '!');
   });
 ```
-***
+
+--------------------------------------------------------------------------------
+
 ## Login Routes - app.route()
-
 routes can be defined on the app variable, like calling express.Router(). This allows you to define multiple actions on a single login route. Routes are applied directly to the main app object.
-
 
 ```js
 admin.route('/login')
@@ -347,30 +366,35 @@ admin.route('/login')
       res.send('processing login form')
     })
 ```
-***
+
+--------------------------------------------------------------------------------
+
 ## Bullets
 - use express.Router() multiple times to define groups of routes
 - apply the express.Router() to a section of the site using app.use()
 - use route middleware to process requests
 - use route middleware to validate parameters using .param()
 - use app.route() to define multiple requests on a route
-
 <hr style="border-style:dashed; border-width:5px;
   " />
 
 # MongoDB
 [Manual](https://goo.gl/e0BLwb)
+
 ## Commands
 Rather than making queries to a table like in a traditional SQL database, queries using Mongo will be made to collections of documents. Stored in JSON style. Mongo will not create a database unless you insert information into that database
+
 ### Common
+
 ```
 mongod          - connect to Mongo instance
 show databases  - list all databases
 db              - show current database
 use db_name     - select a database
-
 ```
+
 ### CRUD
+
 ```
 Create: Creates both database and collection if they do not already exist
 
@@ -391,3 +415,153 @@ Delete:
 db.users.remove({});           - remove all
 db.users.remove({name:'Bob'}); - remove one
 ```
+
+## Mongo and Node
+I use the node package mongoose when working with Mongo.
+
+### Connection to a DB using mongoose
+
+```js
+//grab mongoose package
+var mongoose = require('mongoose');
+
+mongoose.connect('mongodb://localhost/db_name')
+```
+
+## RESTful Node API (Application Programming Interface)
+Express will be the node framework used, morgan allows loggin requests to the console, mongoose is an ODM for communication with Mongo, body-parser is used to pull POST content from an HTTP request, and bcrypt is used to has passwords to be stored in a mongo document.
+
+```
+Structure
+- app/
+----- models/
+----------user.js       // user model
+- node_modules/        // dependencies/packages
+- package.json        // app dependencies
+- server.js          // configure application and create routes
+```
+
+### package.json
+
+```
+npm install express morgan mongoose body-parser bcrypt-nodejs --save
+
+{
+"name" ; "nodeApi",
+"version" : '1.0.0',
+"main": 'server.js',
+"dependancies": {
+  "express" : "version #",
+  "mongoose": "version #",
+  "body-parser": "version #",
+  "bcrypt-nodejs": "version #",
+}
+}
+```
+
+### server.js
+
+```js
+// gettin dem packages
+var express = require('express');
+var app = express();
+var bodyParser = require('body-parser');
+var morgan = require('morgan');
+var mongoose = require('mongoose');
+var port = process.env.PORT || 3000;
+
+//setting up the app
+var User = require('./app/models/user');
+// body-parser for post requests
+app.use(bodyParser.urlencoded({extend: true}));
+app.use(bodyParser.json());
+
+
+//CORS annoyance protection
+app.use(function(req,res,next){
+  res.setHeader('Access-Control-Allow-Origin', "*");
+  res.setHeader('Access-Control-Allow-Methods','GET, POST');
+  res.setHeader('Access-Control-Allow-Headers','X-Requested-With,content-type,Authorization');
+  //carry on
+  next();
+});
+//gotta see those requests via console
+app.use(morgan('dev'));
+
+//ROUTES API------------------------------------
+
+app.get('/', function(req,res){
+  res.send('Home Route Ya')
+});
+
+
+var api = express.Router
+
+api.get("/", function(req,res){
+  res.json({important: '/ api route Ya'});
+});
+
+//all api routes will start with /api
+app.use('/api', apiRouter)
+
+//fire up the server
+app.listen(port);
+console.log('server running on port ' + port );
+```
+
+### user.js
+- create Schema setting name, username, and password as Strings
+- setting index and unique prevents the username from being duplicated
+- setting select: false on passwords prevents it from being shown when making db queries
+- .pre() ensures password is hashed before being saved
+- added a passwordCheck method on UserSchema to validate input with stored data
+
+```js
+// grabbing packages
+var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
+var bcrypt = require('bcrypt-nodejs');
+// user schema
+var UserSchema = new Schema({
+  name: String,
+  username: {type: String, required: true, index: {unique :true}},
+  password: {type: String, required: true, select:false}
+})
+// using bcrypt to hash the password before it is saved
+UserSchema.pre('save', function(next){
+  var user = this;
+//if user isn't new and password wasn't changed then do not create a hash
+  if(!user.isModified('password')) return next();
+// making that hash
+  bcrypt.hash(user.password, null, null, function(err, hash){
+    if (err) return next(err);
+    //setting the hashed pw
+    user.password = hash
+    next();
+  });
+});
+
+// checking input password with hashed to see if they match
+UserSchema.methods.passwordCheck = function(password) {
+  var user = this;
+
+  return bcrypt.compareSync(password, user.password);
+};
+
+// exporting the model so the rest of the app can use it
+module.exports = mongoose.model('User', userSchema);
+```
+
+### API routes
+<table>
+<tr>
+<th>Route</th>
+<th>Verb</th>
+<th>Action</th>
+</tr>
+<tr><td>/api/users</td><td>GET</td><td>Get all Users</td></tr>
+<tr><td>/api/users</td><td>POST</td><td>Create a user</td></tr>
+<tr><td>/api/users/:user_id</td><td>GET</td><td>Get a single user</td></tr>
+<tr><td>/api/users/:user_id</td><td>PUT</td><td>Update a user</td></tr>
+<tr><td>/api/users/:user_id</td><td>DELETE</td><td>Delete a user</td></tr>
+</table>
