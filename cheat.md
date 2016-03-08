@@ -211,6 +211,7 @@ app.use('/admin', adminRouter);
 </tr>
 </tbody>
 </table>
+
 ***
 ## Basic routes - Express
 ```
@@ -354,7 +355,39 @@ admin.route('/login')
 - use route middleware to validate parameters using .param()
 - use app.route() to define multiple requests on a route
 
-<hr style="border-style:solid; border-width:3px;
+<hr style="border-style:dashed; border-width:5px;
   " />
 
 # MongoDB
+[Manual](https://goo.gl/e0BLwb)
+## Commands
+Rather than making queries to a table like in a traditional SQL database, queries using Mongo will be made to collections of documents. Stored in JSON style. Mongo will not create a database unless you insert information into that database
+### Common
+```
+mongod          - connect to Mongo instance
+show databases  - list all databases
+db              - show current database
+use db_name     - select a database
+
+```
+### CRUD
+```
+Create: Creates both database and collection if they do not already exist
+
+db.users.save({ name: 'Bob'});                  - save one user
+db.users.save([{name: 'Bob'}, {name: "Tod"}]);  - save multiple users
+
+Read:
+
+db.users.find();              - show all users
+db.users.find({name: 'Bob'}); - find a specific user
+
+Update:
+
+db.users.update({name: 'Bob'}, {name:'Bob Tod'}); - update user value
+
+Delete:
+
+db.users.remove({});           - remove all
+db.users.remove({name:'Bob'}); - remove one
+```
