@@ -31,12 +31,19 @@
 	- [Mongo and Node](#mongo-and-node)
 		- [Connection to a DB using mongoose](#connection-to-a-db-using-mongoose)
 - [RESTful Node API (Application Programming Interface)](#restful-node-api-application-programming-interface)
-		- [package.json](#packagejson)
-		- [server.js](#serverjs)
-		- [user.js](#userjs)
-		- [API routes](#api-routes)
+	- [package.json](#packagejson)
+	- [server.js](#serverjs)
+	- [user.js](#userjs)
+	- [API routes](#api-routes)
+		- [User POST - /api/Users](#user-post-apiusers)
+		- [User GET all - /api/users](#user-get-all-apiusers)
+		- [User Get single - /api/users/:id](#user-get-single-apiusersid)
+		- [User PUT update - /api/users/:id](#user-put-update-apiusersid)
+		- [User DELETE remove user - /api/users/:id](#user-delete-remove-user-apiusersid)
+- [Node Authentication - Token Based](#node-authentication-token-based)
 
 <!-- /TOC -->
+
 # Node
 ## Basic Node Configuration (package.json)
 Node apps are configured via a package.json file. This is where you set the name, version, repository, author, and package dependancies. The format of the file is an object literal, where properties are defined via a key value pair relationship. The key Main tells node which file to use to start the application.
@@ -414,8 +421,14 @@ admin.route('/login')
 - use route middleware to process requests
 - use route middleware to validate parameters using .param()
 - use app.route() to define multiple requests on a route
-<hr style="border-style:dashed; border-width:5px;
-  " />
+- <hr style="border-style:dashed; border-width:5px;
+" />
+
+
+
+
+
+
 
 # MongoDB
 [Manual](https://goo.gl/e0BLwb)
@@ -480,7 +493,7 @@ Structure
 - server.js          // configure application and create routes
 ```
 
-### package.json
+## package.json
 
 ```
 npm install express morgan mongoose body-parser bcrypt-nodejs --save
@@ -498,7 +511,7 @@ npm install express morgan mongoose body-parser bcrypt-nodejs --save
 }
 ```
 
-### server.js
+## server.js
 
 ```js
 // gettin dem packages
@@ -510,6 +523,7 @@ var mongoose = require('mongoose');
 var port = process.env.PORT || 3000;
 
 //setting up the app
+mongoose.connect('mongodb://localhost/meancheats')
 var User = require('./app/models/user');
 // body-parser for post requests
 app.use(bodyParser.urlencoded({extend: true}));
@@ -534,8 +548,12 @@ app.get('/', function(req,res){
 });
 
 
-var api = express.Router
-
+var api = express.Router() //instance of Router
+//api route middleware
+api.use(function(req,res,next){
+  console.log('api hit');
+  next() //finish route
+})
 api.get("/", function(req,res){
   res.json({important: '/ api route Ya'});
 });
@@ -548,7 +566,7 @@ app.listen(port);
 console.log('server running on port ' + port );
 ```
 
-### user.js
+## user.js
 - create Schema setting name, username, and password as Strings
 - setting index and unique prevents the username from being duplicated
 - setting select: false on passwords prevents it from being shown when making db queries
@@ -591,16 +609,142 @@ UserSchema.methods.passwordCheck = function(password) {
 module.exports = mongoose.model('User', userSchema);
 ```
 
-### API routes
+## API routes
 <table>
+
 <tr>
+
 <th>Route</th>
+
 <th>Verb</th>
-<th>Action</th>
-</tr>
+
+<th>Action</th> </tr>
+
 <tr><td>/api/users</td><td>GET</td><td>Get all Users</td></tr>
+
 <tr><td>/api/users</td><td>POST</td><td>Create a user</td></tr>
+
 <tr><td>/api/users/:user_id</td><td>GET</td><td>Get a single user</td></tr>
+
 <tr><td>/api/users/:user_id</td><td>PUT</td><td>Update a user</td></tr>
-<tr><td>/api/users/:user_id</td><td>DELETE</td><td>Delete a user</td></tr>
-</table>
+
+<tr><td>/api/users/:user_id</td><td>DELETE</td><td>Delete a user</td></tr> </table>
+
+### User POST - /api/Users
+server.js below middleware
+
+```js
+// routes that end in /users
+api.route('/users')
+  //create user post to localhost:3000/api/users
+  .post(function(req,res){
+    //instance of User model
+
+    var user = new User();
+    // set user data to input data
+
+    user.name = req.body.name;
+    user.username = req.body.username;
+    user.password = req.body.password;
+    //save the user to mongo, whilst doing the checking of the errors
+    user.save(function(err) {
+      if (err) {
+        console.log(err);
+        //if there is an error and its code is 11000 thats a duplicate username
+        if(err.code == 11000)
+          return res.json({success: false, message: 'A user with that username already exists.'});
+        else
+            return res.send(err)
+      }
+          res.json({message: 'User created'});
+
+    });
+  });
+```
+
+### User GET all - /api/users
+server.js below middleware
+
+```js
+api.route('/users')
+  .post(function(req,res) {
+    //create a user
+  })
+  // get all users in the database GET localhost:3000/api/users
+  .get(function(req,res){
+    User.find(function(err, users){
+      if (err) res.send(err)
+      //return users if no errors
+      res.json(users);
+    });
+  });
+```
+
+### User Get single - /api/users/:id
+server.js
+
+```js
+api.route('/users/:id')
+  //get user with specfic id
+  //localhost:3000/api/users/:id
+
+  .get(function(req,res){
+    User.findById(req.params.id, function(err,user){
+      if(err) res.send(err);
+
+      //return single user_id
+      res.json(user);
+    });
+  })
+```
+
+### User PUT update - /api/users/:id
+server.js
+
+```js
+
+api.route('/users/:id')
+  .get(function(req,res){
+    //get single user
+  })
+  //update user
+  .put(function(req,res){
+    //find user by id
+    User.findById(req.parms.id , function(err, user) {
+      if (err) res.send(err);
+      // update the users info only if its new
+      if (req.body.name) user.name = req.body.name;
+      if (req.body.username) user.username = req.body.username;
+      if (req.body.password) user.password = req.body.password;
+      // save the updates
+      user.save(function(err){
+        if (err) res.send(err);
+        res.json({message: 'user updated, chyeah'});
+      });
+    });
+  })
+```
+
+### User DELETE remove user - /api/users/:id
+server.js
+
+```js
+api/route('/users/:id')
+.delete(function(req,res){
+User.remove({
+  _id: req.params.id
+}).then(function(err,user){
+
+  if (err) return res.send(err)
+  res.json ({message: "user deleted"});
+})
+  })
+```
+# Node Authentication - Token Based
+
+Their are many ways to implement authentication but one of the most widely used is token based auth. The main benefits to token based authentication is the ability to create stateless and scalable servers, mobile application ready, OAuth and added security.
+
+In traditional server authentication user login information is stored on the server via session, memory or stored disk. The HTTP protocol is stateless meaning if authentication is done based upon that the server would forget who the user is on every new request.
+
+SERVER VS TOKEN
+![server vs toke](https://camo.githubusercontent.com/7a5f442d1c4a49fb1e0a97625be8694aad2026b5/68747470733a2f2f646c2e64726f70626f7875736572636f6e74656e742e636f6d2f752f32313636353130352f636f6f6b69652d746f6b656e2d617574682e706e67)
