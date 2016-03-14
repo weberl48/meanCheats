@@ -748,3 +748,42 @@ In traditional server authentication user login information is stored on the ser
 
 SERVER VS TOKEN
 ![server vs toke](https://camo.githubusercontent.com/7a5f442d1c4a49fb1e0a97625be8694aad2026b5/68747470733a2f2f646c2e64726f70626f7875736572636f6e74656e742e636f6d2f752f32313636353130352f636f6f6b69652d746f6b656e2d617574682e706e67)
+
+## Why Server based Auth is old school
+<strong>Sessions:</strong> storing user information in memory can create overhead when many users are authenticating.
+<strong>Scalability:</strong> cloud providers start replicating servers to handle application load, having vital information in session memory will limit ability to scale.
+<strong>CORS:</strong> could run into problems with forbidden requests. For example when using multiple mobile devices.
+<strong>CSRF:</strong> users could be victim to cross-site forgery.
+
+## Why token based Auth is new school cool
+
+- token based authentication is stateless.
+- no information about the user is stored in server or session
+- no session info means app can scale and add more machines as necessary regardless of where user is logged in.
+- every request after the first will require the token
+- token should be sent in HTTP header
+- to accept requests from all domains using Access-Control-Allow-Origin: *
+- data access permissions can be set on tokens for third party applications.
+
+1. User Requests Access with Username / Password
+2. Application validates credentials
+3. Application provides a signed token to the client
+4. Client stores that token and sends it along with every request
+5. Server verifies token and responds with data
+
+### Benefits
+
+#### Stateless and scalable
+- tokens are stored on client side, stateless and ready to be scaled.
+- can be passed along to any server, useful in load balancing because their is no state or session.
+- token holds the user data
+#### Security
+
+- because no cookie is being sent, the feasibility of a CSRF attack drops dramatically.
+- token can be stored in a cookie, cookie is not used to authenticate token inside cookie is.
+- token can expire after a set amount of time, requiring a user to log in again.
+- selective permissions to third party apps.
+
+## JSON Web Tokens
+
+![jwt](https://cask.scotch.io/2014/11/json-web-token-overview1.png)
