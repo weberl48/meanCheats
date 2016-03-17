@@ -47,6 +47,9 @@
 			- [Stateless and scalable](#stateless-and-scalable)
 			- [Security](#security)
 	- [JSON Web Tokens](#json-web-tokens)
+		- [Header (2 parts)](#header-2-parts)
+		- [Payload](#payload)
+		- [Signature](#signature)
 
 <!-- /TOC -->
 
@@ -790,7 +793,38 @@ SERVER VS TOKEN
 - token can be stored in a cookie, cookie is not used to authenticate token inside cookie is.
 - token can expire after a set amount of time, requiring a user to log in again.
 - selective permissions to third party apps.
+- used inside HTTP header when authenticating an API.
 
 ## JSON Web Tokens
-
+- works with many programing languages
+- carry all the information necessary within itself (self contained)
 ![jwt](https://cask.scotch.io/2014/11/json-web-token-overview1.png)
+### Header (2 parts)
+the header contains two parts the type (jwt) and the hashing algorithm being used.
+
+				{
+					"typ" : "JWT",
+					"aig" : "HS256"
+				}
+### Payload
+ The payload contains the information that is being transmitted as well as additional token information.
+
+ Payload
+
+			 {
+			 "iss": "issuer of the token",
+			 "sub" : "subject of token",
+			 "aud" : "audience of token"
+			 "exp": "experation time of the token",
+			 "nbf": "Defines the time before which the JWT MUST NOT be accepted for processing",
+			 "iat": "The time the JWT was issued. Can be used to determine the age of the JWT",
+			 "jti": "Unique identifier for the JWT. Can be used to prevent the JWT from being replayed. This
+is helpful for a one time use token",
+			 "name": "Bobby Mcguee",
+			 "admin": true
+			 }
+### Signature
+a hash made up of the following:
+- header
+- payload
+- secret

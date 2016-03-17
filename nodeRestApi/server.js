@@ -1,3 +1,4 @@
+'use strict';
 // gettin dem packages
 var express = require('express');
 var app = express();
@@ -8,7 +9,7 @@ var port = process.env.PORT || 3000;
 
 
 //setting up the app
-mongoose.connect('mongodb://localhost/meancheats')
+mongoose.connect('mongodb://localhost/meancheats');
 var User = require('./models/user');
 // body-parser for post requests
 app.use(morgan('dev'));
@@ -32,12 +33,12 @@ app.use(morgan('dev'));
 //ROUTES API------------------------------------
 
 app.get('/', function(req, res) {
-  console.log(User)
-  res.send('Home Route Ya')
+  console.log(User);
+  res.send('Home Route Ya');
 });
 
 
-var api = express.Router()
+var api = express.Router();
 
 api.get("/", function(req, res) {
   console.log('api hit ');
@@ -47,10 +48,10 @@ api.get("/", function(req, res) {
 });
 api.use(function(req, res, next) {
     console.log('api hit');
-    next()
-  })
+    next();
+  });
   //all api routes will start with /api
-app.use('/api', api)
+app.use('/api', api);
   // routes that end in /users
 api.route('/users')
   //create user post to localhost:3000/api/users
@@ -67,14 +68,14 @@ api.route('/users')
       if (err) {
         console.log(err);
         //if there is an error and its code is 11000 thats a duplicate username
-        if (err.code == 11000) {
+        if (err.code === 11000) {
           console.log("adsfasdfasdfadsfadsfd");
           return res.json({
             success: false,
             message: 'A user with that username already exists.'
           });
         } else {
-          return res.send(err)
+          return res.send(err);
         }
       } else {
         console.log('user created');
@@ -89,7 +90,9 @@ api.route('/users')
 
 .get(function(req, res) {
   User.find(function(err, users) {
-    if (err) res.send(err)
+    if (err) {
+      res.send(err);
+    }
     res.json(users);
   });
 });
@@ -100,7 +103,9 @@ api.route('/users/:id')
 
 .get(function(req, res) {
     User.findById(req.params.id, function(err, user) {
-      if (err) res.send(err);
+      if (err) {
+        res.send(err);
+      }
 
       //return single user_id
       res.json(user);
@@ -108,14 +113,20 @@ api.route('/users/:id')
   })
   .put(function(req, res) {
     User.findById(req.parms.id, function(err, user) {
-      if (err) res.send(err);
+      if (err) {res.send(err);}
 
-      if (req.body.name) user.name = req.body.name;
-      if (req.body.username) user.username = req.body.username;
-      if (req.body.password) user.password = req.body.password;
+      if (req.body.name) {
+        user.name = req.body.name;
+      }
+      if (req.body.username) {
+        user.username = req.body.username;
+      }
+      if (req.body.password) {
+        user.password = req.body.password;
+      }
 
       user.save(function(err) {
-        if (err) res.send(err);
+        if (err) {res.send(err);}
         res.json({
           message: 'user updated, chyeah'
         });
@@ -125,14 +136,14 @@ api.route('/users/:id')
   .delete(function(req, res) {
     User.remove({
       _id: req.params.id
-    }).then(function(err, user) {
-      console.log('adfadsfasdf');
-      if (err) return res.send(err)
+    }).then(function(err) {
+      if (err) return res.send(err);
+
       res.json({
         message: "user deleted"
       });
-    })
-  })
+    });
+  });
   //fire up the server
 app.listen(port);
 console.log('server running on port ' + port);

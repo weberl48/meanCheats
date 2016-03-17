@@ -1,22 +1,23 @@
 'use strict';
-let koa = require('koa'),
-  router = require('koa-router'),
-  serve = require('koa-static'),
-  parse = require('co-body'),
-  views = require('co-views'),
-  jwt = require('jsonwebtoken');
 
-let app = koa();
+var express = require('express');
+var app = express();
 
-let render = views(__dirname + '/views/', { default: 'jade' });
+var path = require('path');
 
-let secret = 'GREYSTONE';
+var  jwt = require('jsonwebtoken');
+
+
+
+var render = views(__dirname + '/views/', { default: 'jade' });
+
+var secret = 'GREYSTONE';
 
 app.use(serve(__dirname + '/public'));
 
-app.use(function* auth(next) {
+app.use(function auth(next) {
 
-  let authHeader, token, elements, scheme;
+  var authHeader, token, elements, scheme;
   authHeader = this.get('Authorization');
 
   if (authHeader) {
@@ -41,27 +42,27 @@ app.use(function* auth(next) {
     }
 
   }
-  yield next;
+   next();
 });
 
 app.use(router(app));
 
 function isAuth() {
 
-  return function*(next) {
+  return function (next) {
 
     if (this.user && this.user.userid > 0) {
-      yield next;
+      next();
     } else {
-      this.throw(401, 'Must be logged in to see this!')
+      this.throw(401, 'Must be logged in to see this!');
     }
 
-  }
+  };
 
 }
 // changed from /logs to /api/logs.  Page refresh at url /logs shouldn't hit
 // this endpoint
-app.get('/api/logs', isAuth(), function* logs() {
+app.get('/api/logs', isAuth(), function logs() {
 
   this.body = [{
     id: 1,
@@ -69,18 +70,18 @@ app.get('/api/logs', isAuth(), function* logs() {
     date: new Date() - 60000 * 50
   }, {
     id: 2,
-    description: 'Completed Job Process!',
+    description: 'Compvared Job Process!',
     date: new Date()
   }];
 
 });
 
 // changed from /api to /api/authenticate.  to be consistent w/ logs endpoint
-app.post('/api/authenticate', function* authenticate() {
+app.post('/api/authenticate', function authenticate() {
 
-  let body, claim;
+  var body, claim;
 
-  body = yield parse(this);
+  body =  parse(this);
 
   if (body.username === 'james' && body.password === '123456') {
 
@@ -98,9 +99,9 @@ app.post('/api/authenticate', function* authenticate() {
 
 });
 
-app.get(/^.*$/, function* index() {
+app.get(/^.*$/, function index() {
   // yield send(this, __dirname + '/index.html');
-  this.body = yield render('index');
+  this.body =  render('index');
 });
 
 app.listen(4000);

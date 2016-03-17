@@ -4,6 +4,7 @@
   "description": "",
   "main": "server.js",
   "dependencies": {
+    "express": "^4.13.3",
     "co-body": "^1.0.0",
     "co-views": "^0.2.0",
     "jade": "^1.9.1",
