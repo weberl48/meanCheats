@@ -828,3 +828,108 @@ a hash made up of the following:
 - header
 - payload
 - secret
+- token is sent on every request so there are no CSRF attacks. There is no session based information to manipulate since, there is no session.
+
+```js
+var encodedString = base64UrlEncode(header) + "." + base64UrlEncode(payload);
+
+HMACSHA256(encodedString, 'secret');
+```
+
+# Authenticating Node.js API
+
+- home page unauthenticated
+- API routes are authenticated
+- login route used to authenticate a user
+- pass in token for auth
+
+```
+npm install jsonwebtoken --save
+//create and verify tokens
+```
+package.json
+
+```
+{
+  "name": "noderestapi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
+    "body-parser": "^1.15.0",
+    "express": "^4.13.4",
+    "mongoose": "^4.4.6",
+    "morgan": "^1.7.0"
+  }
+}
+```
+server.js
+
+```js
+
+
+```
+Was tired of token stuff, gunna start up angular and come back to this
+
+
+# Angular (FRONT-END)
+- "What HTML would have been if it had been designed for web-apps"
+- MVC architecture
+
+## Data-Binding
+
+data binding allows for a centralized source of data, this allows a developer to move away from injecting data into views. For example with JQuerys (append,val, html). Angular handles injection for you by binding variables in the view and controller.
+
+Structure
+```
+├── js/
+│   ├── app.js
+├── index.html
+```
+
+app.js
+
+```js
+angular.module('angApp',[]);
+.controller('mainController', function() {
+	// binding this to view model
+	var viewModel = this;
+
+	// defining variables on this allows them to be available to your apps views
+
+viewModel.message = "hello world";
+
+viewModel.list = [
+	{name:'Bob', sex:'male'},
+	{name:'Tina', sex:'female'},
+	{name:'Fiona', sex:'female'}
+	];
+});
+
+```
+```html
+<!DOCTYPE html>
+<html ng-app="angApp">
+	<head>
+		<meta charset="utf-8">
+		<title>Angular App Basic</title>
+	</head>
+	<body  ng-controller="mainController as main">
+		<div class="">
+			<h2>{{main.message}}</h2>
+			<p ng-repeat="peeps in main.list">
+				{{peeps.name}}
+				{{peeps.sex}}
+			</p>
+		</div>
+	</body>
+</html>
+
+```
